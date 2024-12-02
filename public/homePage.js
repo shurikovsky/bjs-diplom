@@ -2,12 +2,16 @@ logoutButton = new LogoutButton();
 logoutButton.action = () => ApiConnector.logout(response => {
   if (response.success) {
     location.reload();
-  } else {
-    alert(response.error);
   }
 })
 
 ratesBoard = new RatesBoard();
+ApiConnector.getStocks(data => {
+  if (data.success) {
+    ratesBoard.clearTable();
+    ratesBoard.fillTable(data.data);
+  }
+})
 setInterval(() => {ApiConnector.getStocks(data => {
   if (data.success) {
     ratesBoard.clearTable();
@@ -28,7 +32,7 @@ moneyManager.addMoneyCallback = (data) => {
     if (response.success) {
         ProfileWidget.showProfile(response.data);  
     }  
-    moneyManager.setMessage(response.success, 'добавлено'); 
+    moneyManager.setMessage(response.success, response.error ? response.error : 'Счет пополнен'); 
     })
 }
 
@@ -37,7 +41,7 @@ moneyManager.conversionMoneyCallback = (data) => {
     if (response.success) {
         ProfileWidget.showProfile(response.data);  
     }  
-    moneyManager.setMessage(response.success, 'добавлено'); 
+    moneyManager.setMessage(response.success, response.error ? response.error : 'Конвертация прошла успешно'); 
     })
 }
 
@@ -46,7 +50,7 @@ moneyManager.sendMoneyCallback = (data) => {
     if (response.success) {
         ProfileWidget.showProfile(response.data);  
     }  
-    moneyManager.setMessage(response.success, 'добавлено'); 
+    moneyManager.setMessage(response.success, response.error ? response.error : 'Средства переведены'); 
     })
 }
 
@@ -67,8 +71,8 @@ favoritesWidget.addUserCallback = (data) => {
       favoritesWidget.fillTable(response.data);
       moneyManager.updateUsersList(response.data);  
     }
-  })
-  moneyManager.setMessage(response.success, 'добавлено');   
+    favoritesWidget.setMessage(response.success, response.error ? response.error : 'добавлен новый участник'); 
+  })   
 }
 
 favoritesWidget.removeUserCallback = (Id) => {
@@ -77,7 +81,7 @@ favoritesWidget.removeUserCallback = (Id) => {
         favoritesWidget.clearTable();
         favoritesWidget.fillTable(response.data);
         moneyManager.updateUsersList(response.data);  
-      }  
-    })
-    moneyManager.setMessage(response.success, 'добавлено');
+    }
+    favoritesWidget.setMessage(response.success, response.error ? response.error : 'участник удален');  
+    })  
 }
